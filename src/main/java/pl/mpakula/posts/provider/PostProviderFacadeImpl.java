@@ -17,7 +17,8 @@ class PostProviderFacadeImpl implements PostProviderFacade {
 
     @Override
     public List<PostDto> getAllPosts() {
-        Map<Long, Post> posts = postRepository.findAll().stream()
+        Map<Long, Post> posts = postRepository.findAll()
+                .stream()
                 .collect(Collectors.toMap(Post::getId, Function.identity()));
         return commentRepository.findAll()
                 .stream()
