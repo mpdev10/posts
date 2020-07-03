@@ -18,7 +18,7 @@ class PostWriterFacadeImpl implements PostWriterFacade {
     private final File saveDir;
 
     @Override
-    public void write(@NonNull List<PostDto> posts) throws IOException {
+    public void write(@NonNull List<? extends PostDto> posts) throws IOException {
         if (saveDir.exists() || saveDir.mkdir()) {
             for (PostDto post : posts) {
                 String postJson = gson.toJson(post);
