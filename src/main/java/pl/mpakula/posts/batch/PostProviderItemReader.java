@@ -22,4 +22,5 @@ class PostProviderItemReader implements ItemReader<PostDto> {
         }
         return iteratorItemReader.read();
     }
+
 }
