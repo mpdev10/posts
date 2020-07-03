@@ -14,13 +14,13 @@ class PostProviderConfiguration {
     }
 
     @Bean
-    CommentRepository commentRepository(@Value("${comment.rest.url}") String commentUrl,
+    CommentRepository commentRepository(@Value("${provider.comment.rest.url}") String commentUrl,
                                         RestTemplate restTemplate) {
         return new RestCommentRepository(commentUrl, restTemplate);
     }
 
     @Bean
-    PostRepository postRepository(@Value("${post.rest.url}") String postUrl,
+    PostRepository postRepository(@Value("${provider.post.rest.url}") String postUrl,
                                   RestTemplate restTemplate) {
         return new RestPostRepository(postUrl, restTemplate);
     }
