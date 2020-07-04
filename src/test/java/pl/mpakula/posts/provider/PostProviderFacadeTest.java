@@ -1,6 +1,5 @@
 package pl.mpakula.posts.provider;
 
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import pl.mpakula.posts.dto.PostDto;
 
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -35,15 +33,16 @@ class PostProviderFacadeTest {
 
     @Test
     void getAllPosts_postsWithAndWithoutCommentsExist_allAreReturned() {
-        List<Post> nonCommentPosts = createPosts(5);
-        List<Post> commentPosts = createPosts(2);
+        List<Post> allPosts = createPosts(7);
+        List<Post> commentPosts = allPosts.subList(0, 3);
         Map<Long, List<Comment>> comments = createCommentsForPosts(commentPosts);
-        List<PostDto> expectedPosts = Stream.concat(commentPosts.stream(), nonCommentPosts.stream())
+        List<PostDto> expectedPosts = allPosts.stream()
                 .map(post -> Post.toDto(post, comments.get(post.getId())))
                 .collect(Collectors.toList());
-        List<Post> allPosts = Lists.newArrayList(nonCommentPosts);
-        allPosts.addAll(commentPosts);
-        List<Comment> allComments = comments.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        List<Comment> allComments = comments.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         assertThat(createFacade(allPosts, allComments).getAllPosts()).containsAll(expectedPosts);
     }
 
