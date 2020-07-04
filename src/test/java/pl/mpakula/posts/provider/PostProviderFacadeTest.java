@@ -20,36 +20,46 @@ class PostProviderFacadeTest {
 
     @Test
     void getAllPosts_postWithoutComment_postIsReturned() {
+        //given
         Post post = createPost(1L, 1L);
-        assertPostWithCommentsIsReturned(post, Collections.emptyList());
+        List<Comment> comments = Collections.emptyList();
+        var postProviderFacade = createFacadeWithMockRepositories(List.of(post), comments);
+        //when
+        List<PostDto> actualPosts = postProviderFacade.getAllPosts();
+        //then
+        assertThat(actualPosts).containsOnly(Post.toDto(post, comments));
     }
 
     @Test
     void getAllPosts_postContainsComment_postIsReturned() {
+        //given
         Post post = createPost(1L, 1L);
         List<Comment> comments = createCommentsForPost(post.getId());
-        assertPostWithCommentsIsReturned(post, comments);
+        var postProviderFacade = createFacadeWithMockRepositories(List.of(post), comments);
+        //when
+        List<PostDto> actualPosts = postProviderFacade.getAllPosts();
+        //then
+        assertThat(actualPosts).containsOnly(Post.toDto(post, comments));
     }
 
     @Test
     void getAllPosts_postsWithAndWithoutCommentsExist_allAreReturned() {
+        //given
         List<Post> allPosts = createPosts(7);
         List<Post> commentPosts = allPosts.subList(0, 3);
         Map<Long, List<Comment>> comments = createCommentsForPosts(commentPosts);
-        List<PostDto> expectedPosts = allPosts.stream()
-                .map(post -> Post.toDto(post, comments.get(post.getId())))
-                .collect(Collectors.toList());
         List<Comment> allComments = comments.values()
                 .stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        assertThat(createFacade(allPosts, allComments).getAllPosts()).containsAll(expectedPosts);
-    }
-
-    private static void assertPostWithCommentsIsReturned(Post post, List<Comment> comments) {
-        PostProviderFacade providerFacade = createFacade(List.of(post), comments);
-        List<PostDto> posts = providerFacade.getAllPosts();
-        assertThat(posts).containsOnly(Post.toDto(post, comments));
+        var postProviderFacade = createFacadeWithMockRepositories(allPosts, allComments);
+        //when
+        List<PostDto> expectedPosts = allPosts.stream()
+                .map(post -> Post.toDto(post, comments.get(post.getId())))
+                .collect(Collectors.toList());
+        List<PostDto> actualPosts = postProviderFacade.getAllPosts();
+        //then
+        assertThat(actualPosts).containsAll(expectedPosts);
     }
 
     private static Post createPost(Long id, Long userId) {
@@ -86,7 +96,7 @@ class PostProviderFacadeTest {
                 .collect(Collectors.groupingBy(Comment::getPostId));
     }
 
-    private static PostProviderFacade createFacade(List<Post> posts, List<Comment> comments) {
+    private static PostProviderFacade createFacadeWithMockRepositories(List<Post> posts, List<Comment> comments) {
         return new PostProviderConfiguration()
                 .postProviderFacade(mockCommentRepository(comments), mockPostRepository(posts));
     }
