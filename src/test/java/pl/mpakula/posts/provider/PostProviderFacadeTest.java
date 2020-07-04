@@ -53,7 +53,11 @@ class PostProviderFacadeTest {
     }
 
     private static Post createPost(Long id, Long userId) {
-        return new Post(id, userId, "title" + id);
+        return Post.builder()
+                .id(id)
+                .userId(userId)
+                .title("title" + id)
+                .build();
     }
 
     private static List<Post> createPosts(long count) {
@@ -64,7 +68,13 @@ class PostProviderFacadeTest {
 
     private static List<Comment> createCommentsForPost(Long postId) {
         return LongStream.range(0, DEFAULT_COMMENT_NUM)
-                .mapToObj(num -> new Comment(num, postId, "comment" + num, "mail" + postId + num, "body" + num))
+                .mapToObj(num -> Comment.builder()
+                        .id(num)
+                        .postId(postId)
+                        .name("comment" + num)
+                        .email("mail" + postId + num)
+                        .body("body" + num)
+                        .build())
                 .collect(Collectors.toList());
     }
 

@@ -1,5 +1,6 @@
 package pl.mpakula.posts.provider;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
+@Builder
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 class Comment {

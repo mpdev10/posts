@@ -8,9 +8,9 @@ import pl.mpakula.posts.dto.PostDto;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Getter
 @Builder
+@RequiredArgsConstructor
 @NoArgsConstructor(force = true)
 class Post {
 
