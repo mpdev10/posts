@@ -7,9 +7,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,7 +28,7 @@ class PostProviderFacadeTest {
         //when
         List<PostDto> actualPosts = postProviderFacade.getAllPosts();
         //then
-        assertThat(actualPosts).containsOnly(Post.toDto(post, comments));
+        assertThat(actualPosts).containsOnly(PostMapper.toDto(post, comments));
     }
 
     @Test
@@ -39,7 +40,7 @@ class PostProviderFacadeTest {
         //when
         List<PostDto> actualPosts = postProviderFacade.getAllPosts();
         //then
-        assertThat(actualPosts).containsOnly(Post.toDto(post, comments));
+        assertThat(actualPosts).containsOnly(PostMapper.toDto(post, comments));
     }
 
     @Test
@@ -51,12 +52,12 @@ class PostProviderFacadeTest {
         List<Comment> allComments = comments.values()
                 .stream()
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .collect(toList());
         var postProviderFacade = createFacadeWithMockRepositories(allPosts, allComments);
         //when
         List<PostDto> expectedPosts = allPosts.stream()
-                .map(post -> Post.toDto(post, comments.get(post.getId())))
-                .collect(Collectors.toList());
+                .map(post -> PostMapper.toDto(post, comments.get(post.getId())))
+                .collect(toList());
         List<PostDto> actualPosts = postProviderFacade.getAllPosts();
         //then
         assertThat(actualPosts).containsAll(expectedPosts);
@@ -73,7 +74,7 @@ class PostProviderFacadeTest {
     private static List<Post> createPosts(long count) {
         return LongStream.range(0, count)
                 .mapToObj(num -> createPost(num, num))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private static List<Comment> createCommentsForPost(Long postId) {
@@ -85,7 +86,7 @@ class PostProviderFacadeTest {
                         .email("mail" + postId + num)
                         .body("body" + num)
                         .build())
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private Map<Long, List<Comment>> createCommentsForPosts(List<Post> commentPosts) {
@@ -93,7 +94,7 @@ class PostProviderFacadeTest {
                 .map(Post::getId)
                 .map(PostProviderFacadeTest::createCommentsForPost)
                 .flatMap(Collection::stream)
-                .collect(Collectors.groupingBy(Comment::getPostId));
+                .collect(groupingBy(Comment::getPostId));
     }
 
     private static PostProviderFacade createFacadeWithMockRepositories(List<Post> posts, List<Comment> comments) {

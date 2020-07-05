@@ -5,7 +5,9 @@ import pl.mpakula.posts.dto.PostDto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 class PostProviderFacadeImpl implements PostProviderFacade {
@@ -18,14 +20,14 @@ class PostProviderFacadeImpl implements PostProviderFacade {
         Map<Long, List<Comment>> comments = getPostIdToCommentsMap();
         return postRepository.findAll()
                 .stream()
-                .map(post -> Post.toDto(post, comments.get(post.getId())))
-                .collect(Collectors.toList());
+                .map(post -> PostMapper.toDto(post, comments.get(post.getId())))
+                .collect(toList());
     }
 
     private Map<Long, List<Comment>> getPostIdToCommentsMap() {
         return commentRepository.findAll()
                 .stream()
-                .collect(Collectors.groupingBy(Comment::getPostId));
+                .collect(groupingBy(Comment::getPostId));
     }
 
 }
